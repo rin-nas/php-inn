@@ -29,7 +29,6 @@ class INN
 	 */
 	public static function valid($n)
 	{
-		if (! ReflectionTypeHint::isValid()) return false;
 		if ($n === null) return null;
 
 		$n = strval($n);
