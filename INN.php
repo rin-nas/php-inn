@@ -6,7 +6,7 @@
  * @license  http://creativecommons.org/licenses/by-sa/3.0/
  * @author   https://github.com/rin-nas
  * @charset  UTF-8
- * @version  1.0.3
+ * @version  1.0.4
  */
 class INN
 {
@@ -18,25 +18,47 @@ class INN
 	ОКАТО  от 4 до 11 цифр
 	КПП    9 цифр
 	*/
+	
+	const IP = 1; // индивидуальный предприниматель
+	const UL = 0; // юридическое лицо
+
 
 	#запрещаем создание экземпляра класса, вызов методов этого класса только статически!
 	private function __construct() {}
 
 	/**
 	 *
-	 * @param   scalar|null  $n   целое число
+	 * @param   scalar|null  $n   10-ти или 12-ти значное целое число
+	 * @param   int|null     $type - тип плательщика ИП или ЮЛ. Если ЮЛ - то обязательно 10 знаков, если ИП то 12
 	 * @return  bool|null    TRUE, если ИНН корректен и FALSE в противном случае
 	 */
-	public static function valid($n)
+	public static function isValid($n, , $type = null)
 	{
 		if ($n === null) return null;
 
 		$n = strval($n);
-		if (! in_array(strlen($n), array(10, 12)) || ! ctype_digit($n)) return false;
+		if (! ctype_digit($n)) {
+			return false;
+		}
+		
+		//все нули удовлетворяют формуле
+		if ((int)$n === 0) {
+			return false;
+		}
+		
+		//не может быть региона 00
+		if (substr($n, 0, 2) === '00') {
+			return false;
+		}
 
+		$len = strlen($n);
+		
 		#10 знаков -- организации, для которых обязательно д.б. КПП
-		if (strlen($n) == 10)
+		if ($len === 10)
 		{
+			if ($type !== null && $type !== self::UL) {
+				return false;
+			}
 			$sum = 0;
 			foreach (array(2, 4, 10, 3, 5, 9, 4, 6, 8) as $i => $weight)
 			{
@@ -46,16 +68,23 @@ class INN
 		}
 
 		#12 знаков -- индивидуальные предприниматели, для которых КПП отсутствует
-		$sum1 = $sum2 = 0;
-		foreach (array(7, 2, 4, 10, 3, 5, 9, 4, 6, 8) as $i => $weight)
+		if ($len === 12)
 		{
-			$sum1 += $weight * substr($n, $i, 1);
+			if ($type !== null && $type !== self::IP) {
+				return false;
+			}
+			$sum1 = $sum2 = 0;
+			foreach (array(7, 2, 4, 10, 3, 5, 9, 4, 6, 8) as $i => $weight)
+			{
+				$sum1 += $weight * substr($n, $i, 1);
+			}
+			foreach (array(3, 7, 2, 4, 10, 3, 5, 9, 4, 6, 8) as $i => $weight)
+			{
+				$sum2 += $weight * substr($n, $i, 1);
+			}
+			return ($sum1 % 11 % 10) . ($sum2 % 11 % 10) == substr($n, 10, 2);
 		}
-		foreach (array(3, 7, 2, 4, 10, 3, 5, 9, 4, 6, 8) as $i => $weight)
-		{
-			$sum2 += $weight * substr($n, $i, 1);
-		}
-		return ($sum1 % 11 % 10) . ($sum2 % 11 % 10) == substr($n, 10, 2);
+		return false;
 	}
 }
 
