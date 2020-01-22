@@ -32,7 +32,7 @@ class INN
 	 * @param   int|null     $type - тип плательщика ИП или ЮЛ. Если ЮЛ - то обязательно 10 знаков, если ИП то 12
 	 * @return  bool|null    TRUE, если ИНН корректен и FALSE в противном случае
 	 */
-	public static function isValid($n, , $type = null)
+	public static function isValid($n, $type = null)
 	{
 		if ($n === null) return null;
 
