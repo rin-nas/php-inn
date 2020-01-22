@@ -59,12 +59,13 @@ class INN
 			if ($type !== null && $type !== self::UL) {
 				return false;
 			}
+
 			$sum = 0;
-			foreach (array(2, 4, 10, 3, 5, 9, 4, 6, 8) as $i => $weight)
+			foreach ([2, 4, 10, 3, 5, 9, 4, 6, 8] as $i => $weight)
 			{
-				$sum += $weight * substr($n, $i, 1);
+				$sum += $weight * $n[$i];
 			}
-			return $sum % 11 % 10 == substr($n, 9, 1);
+			return $sum % 11 % 10 === $n[9];
 		}
 
 		#12 знаков -- индивидуальные предприниматели, для которых КПП отсутствует
@@ -73,16 +74,26 @@ class INN
 			if ($type !== null && $type !== self::IP) {
 				return false;
 			}
-			$sum1 = $sum2 = 0;
-			foreach (array(7, 2, 4, 10, 3, 5, 9, 4, 6, 8) as $i => $weight)
+
+			$sum1 = 0;
+			foreach ([7, 2, 4, 10, 3, 5, 9, 4, 6, 8] as $i => $weight)
 			{
-				$sum1 += $weight * substr($n, $i, 1);
+				$sum1 += $weight * $n[$i];
 			}
-			foreach (array(3, 7, 2, 4, 10, 3, 5, 9, 4, 6, 8) as $i => $weight)
+			if (($sum1 % 11 % 10) !== $n[10])
 			{
-				$sum2 += $weight * substr($n, $i, 1);
+				return false;
 			}
-			return ($sum1 % 11 % 10) . ($sum2 % 11 % 10) == substr($n, 10, 2);
+			
+			$sum2 = 0;
+			foreach ([3, 7, 2, 4, 10, 3, 5, 9, 4, 6, 8] as $i => $weight)
+			{
+				$sum2 += $weight * $n[$i];
+			}
+			if (($sum2 % 11 % 10) !== $n[11])
+			{
+				return false;
+			}
 		}
 		return false;
 	}
