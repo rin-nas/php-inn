@@ -2,7 +2,7 @@
 /**
  * Проверяет ИНН (идентификационный номер налогоплательщика) на корректность
  * 
- * @link	 https://ru.wikipedia.org/wiki/ИНН
+ * @link     https://ru.wikipedia.org/wiki/ИНН
  * @license  http://creativecommons.org/licenses/by-sa/3.0/
  * @author   https://github.com/rin-nas
  * @charset  UTF-8
